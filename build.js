@@ -5,6 +5,8 @@ async function main() {
         await build({
             entryPoints: ["./src/index.ts"],
             watch: false,
+            minify: false,
+            sourcemap: false,
             format,
             outfile: `./dist/index${format === "cjs" ? "" : `.${format}`}.js`
         });
