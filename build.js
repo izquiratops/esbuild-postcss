@@ -6,9 +6,9 @@ async function main() {
             entryPoints: ["./src/index.ts"],
             watch: false,
             format,
-            outfile: `./dist/index.${format}.js`
+            outfile: `./dist/index${format === "cjs" ? "" : `.${format}`}.js`
         });
     }
 }
 
-await main();
+main();
