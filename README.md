@@ -4,7 +4,8 @@ Made this repo to learn more about ESBuild. With this plugin I can use PostCSS o
 
 ## How to use
 
-Once you got `esbuild` and `postcss`:
+Once you got `esbuild` and `postcss` install the package:
+
 `npm i @izquiratops/esbuild-postcss`
 
 A build script can be written like this:
