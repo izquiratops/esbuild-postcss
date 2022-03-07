@@ -1,6 +1,6 @@
 {
-  "name": "esbuild-postcss",
-  "version": "0.0.1",
+  "name": "@izquiratops/esbuild-postcss",
+  "version": "1.0.0",
   "description": "Use PostCSS with ESBuild",
   "repository": "https://github.com/izquiratops/esbuild-postcss",
   "author": "Jordi Izquierdo <hi@izquiratops.dev>",
@@ -8,6 +8,9 @@
     "esbuild",
     "postcss"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "node build.js",
     "test": "mocha"
@@ -18,8 +21,6 @@
   ],
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
-  "types": "src/modules.d.ts",
-  "dependencies": {},
   "devDependencies": {
     "@types/chai": "^4.3.0",
     "@types/mocha": "^9.1.0",
