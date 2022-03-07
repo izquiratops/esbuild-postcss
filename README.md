@@ -1,23 +1,25 @@
-# ESBuild plugin to get PostCSS working 🥳
+# ESBuild + PostCSS 🖌
 
-### How to use
+Made this repo to learn more about ESBuild. With this plugin I can use PostCSS on my personal projects.
 
-You can run the build process with node like this:
+## How to use
+
+Once you got `esbuild` and `postcss`:
+`npm i @izquiratops/esbuild-postcss`
+
+A build script can be written like this:
 
 ```
-const postCSS = require("@izquiratops/esbuild-postcss");
-const autoprefixer = require("autoprefixer");
-const cssModules = require("postcss-modules");
+const postCssPlugin = require("@izquiratops/esbuild-postcss");
 
 build({
 	entryPoints: ['src/index.ts'],
 	outdir: 'dist',
 	bundle: true,
-	loader: { ".png": "file" },
 	plugins: [
-	  postCSS.default({
-		plugins: [autoprefixer, cssModules],
-	  }),
-	],
+	  postCssPlugin.default({
+		plugins: [autoprefixer]
+	  })
+	]
   })
 ```
