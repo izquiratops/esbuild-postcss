@@ -1,0 +1,21 @@
+:global .page {
+  padding: 20px;
+}
+
+.title {
+  composes: title from "./mixins.css";
+  color: green;
+}
+
+.article {
+  font-size: 16px;
+}
+
+.image {
+  background-image: url(image@1x.png);
+}
+@media (min-resolution: 2dppx) {
+  .image {
+    background-image: url(image@2x.png);
+  }
+}

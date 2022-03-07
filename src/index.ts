@@ -1,62 +1,30 @@
+import { readFileSync } from "fs";
 import path from "path";
-import {dirSync} from "tmp";
-import {readFileSync, writeFile, writeFileSync} from "fs";
-import {OnResolveArgs, Plugin} from "esbuild";
-import postcss, {Plugin as PostCSSPlugin} from "postcss";
+import { Plugin } from "esbuild";
+import postcss, { AcceptedPlugin } from "postcss";
 
 interface PostCSSPluginOptions {
-    plugins: Array<PostCSSPlugin>;
-    modules: boolean;
-    rootDir?: string;
-    fileIsModule?: (filename: string) => boolean;
+  plugins: Array<AcceptedPlugin>;
 }
 
-interface CSSModule {
-    path: string;
-    map: { [key: string]: string }
-}
+const postCSSPlugin = ({ plugins = [] }: PostCSSPluginOptions): Plugin => ({
+  name: "plugin-postcss",
+  setup(build) {
+    build.onResolve({ filter: /.\.png/ }, (args) => {
+      return { path: path.join(args.resolveDir, "public", args.path) };
+    });
 
-const postCSSPlugin = (
-    {
-        plugins = [],
-        modules = true,
-        rootDir = process.cwd(),
-        fileIsModule = null
-    }: PostCSSPluginOptions): Plugin => ({
-    name: "postcss",
-    setup(build) {
-        const {name: tmpDir} = dirSync();
+    build.onLoad({ filter: /.\.css/ }, async ({ path }) => {
+      const processor = postcss(plugins);
+      const content = readFileSync(path);
+      const result = await processor.process(content, { from: path });
 
-        // TODO: CSS Modules thing
-        // const modulesSet = new Set<CSSModule>();
-        // const modulesPlugin = postcssModules(...)
-
-        build.onResolve({
-            filter: /.\.(css)$/,
-            namespace: "file"
-        }, async (args: OnResolveArgs) => {
-            // about args: https://esbuild.github.io/plugins/#on-resolve-options
-            const sourceFullPath = path.resolve(args.resolveDir, args.path);
-            const sourceExt = path.extname(sourceFullPath);
-            const sourceBaseName = path.basename(sourceFullPath, sourceExt);
-            const sourceDir = path.dirname(sourceFullPath);
-            const sourceRelDir = path.relative(path.dirname(rootDir), sourceDir);
-
-            const sourceContent = readFileSync(sourceFullPath);
-            const tmpFullPath = path.resolve(tmpDir, `${sourceBaseName}.css`);
-
-            console.log(`Processing file ${sourceFullPath} to ${tmpFullPath}`);
-            const {css: tmpContent} = await postcss(plugins).process(
-                sourceContent, {from: sourceFullPath, to: tmpFullPath}
-            );
-
-            await writeFile(tmpFullPath, tmpContent, () => {});
-
-            return {
-                path: tmpFullPath
-            };
-        })
-    }
-})
+      return {
+        contents: result.toString(),
+        loader: "css",
+      };
+    });
+  },
+});
 
 export default postCSSPlugin;

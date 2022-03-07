@@ -1,28 +1,37 @@
+const { rmSync } = require("fs");
 const { assert } = require("chai");
 const { build } = require("esbuild");
 const postCSS = require("../dist");
 const autoprefixer = require("autoprefixer");
+const cssModules = require("postcss-modules");
 
-describe("PostCSS", () => {
-    it("Basic CSS import", (done) => {
-        runBuild(['test/scripts/basic.ts'])
-            .then((res) => {
-                assert(res);
-                done();
-            })
-            .catch(done)
-    })
-})
+const outdir = "test/dist";
 
-function runBuild(entryPoints) {
-    return build({
-        entryPoints,
-        bundle: true,
-        outdir: 'dist',
-        plugins: [
-            postCSS.default({
-                plugins: [autoprefixer]
-            })
-        ]
-    }).catch(() => process.exit(1))
+describe("Testing PostCSS plugin", () => {
+  beforeEach(() => {
+    rmSync(outdir, { recursive: true, force: true });
+  });
+
+  it("Basic CSS import from .ts", (done) => {
+    run(["test/basic/main.ts"])
+      .then((res) => {
+        assert(res);
+        done();
+      })
+      .catch(done);
+  });
+});
+
+async function run(entryPoints) {
+  return build({
+    entryPoints,
+    outdir,
+    bundle: true,
+    loader: { ".png": "file" },
+    plugins: [
+      postCSS.default({
+        plugins: [autoprefixer, cssModules],
+      }),
+    ],
+  }).catch(() => process.exit(1));
 }
